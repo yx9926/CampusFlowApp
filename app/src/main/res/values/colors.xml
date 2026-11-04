@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="campus_primary">#137D72</color>
+    <color name="campus_background">#F4F7F7</color>
+    <bool name="campus_light_system_bars">true</bool>
+</resources>
