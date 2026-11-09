@@ -121,7 +121,15 @@ fun DiscoverScreen(model: CampusViewModel, listState: LazyListState) {
                 item(key = "loading") { LoadingCards() }
             else if (!state.loading && state.items.isEmpty() && state.error == null)
                 item(key = "empty") {
-                    EmptyPanel("没有符合条件的空间", "", "重置筛选") {
+                    val filters = model.filters
+                    val description = when {
+                        filters.hasPlannedTime || filters.openOnly ->
+                            "试试调整开放时段，或重置筛选查看附近空间。"
+                        filters.facilities.isNotEmpty() ->
+                            "空间需具备所选的全部设施。"
+                        else -> ""
+                    }
+                    EmptyPanel("没有符合条件的空间", description, "重置筛选") {
                         model.applyFilters(
                             SpaceFilters(
                                 latitude = model.filters.latitude,

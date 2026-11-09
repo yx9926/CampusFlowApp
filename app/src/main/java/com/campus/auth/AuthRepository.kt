@@ -40,12 +40,12 @@ class HttpAuthRepository(serverAddress: String) : AuthRepository {
 
     init {
         require(origin.scheme == "https" || (BuildConfig.DEBUG && origin.scheme == "http")) {
-            "服务器地址需要 HTTPS；调试版本可使用 HTTP"
+            "服务连接配置无效"
         }
         require(!origin.host.isNullOrBlank() && origin.userInfo == null &&
             origin.query == null && origin.fragment == null &&
             (origin.path.isNullOrBlank() || origin.path == "/")) {
-            "请输入服务器根地址，例如 http://127.0.0.1:8080"
+            "服务连接配置无效"
         }
     }
 
@@ -125,7 +125,7 @@ class HttpAuthRepository(serverAddress: String) : AuthRepository {
         } catch (failure: SocketTimeoutException) {
             throw IOException(if (path == "/auth/register") "请求超时，请先登录确认账号是否已创建" else "请求超时，请刷新确认操作结果后重试", failure)
         } catch (failure: IOException) {
-            throw IOException("无法连接服务器，请检查网络和服务器地址", failure)
+            throw IOException("暂时无法连接服务，请检查网络后重试", failure)
         } finally {
             connection.disconnect()
         }

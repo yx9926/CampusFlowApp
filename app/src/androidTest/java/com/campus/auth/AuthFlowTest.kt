@@ -17,10 +17,8 @@ class AuthFlowTest {
     }
 
     @Test
-    fun loginOnlyOffersTheRealBackend() {
-        compose.onNodeWithTag("connection_settings").performScrollTo().performClick()
-        compose.onNodeWithText("服务器地址", substring = false).performScrollTo().assertExists()
-        compose.onNodeWithText("http://127.0.0.1:8080", substring = false).assertExists()
+    fun loginDoesNotOfferAServerOverride() {
+        compose.onNodeWithText("连接设置", substring = false).assertDoesNotExist()
         compose.onNodeWithText("使用演示数据", substring = false).assertDoesNotExist()
     }
 

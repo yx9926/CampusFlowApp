@@ -28,7 +28,7 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
-        buildConfigField("String", "BACKEND_BASE_URL", "\"http://127.0.0.1:8080\"")
+        buildConfigField("String", "BACKEND_BASE_URL", "\"https://139.159.155.248\"")
 
         manifestPlaceholders["AMAP_ANDROID_KEY"] = amapAndroidKey.get()
 

@@ -1,12 +1,11 @@
 package com.campus.spaces
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
@@ -16,7 +15,6 @@ import com.campus.ui.theme.*
 @Composable
 fun ProfileScreen(auth: AuthViewModel) {
     val state = auth.state
-    var connectionExpanded by remember { mutableStateOf(false) }
     Column(
         Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(CampusSpacing.Page),
         verticalArrangement = Arrangement.spacedBy(CampusSpacing.ExtraLarge),
@@ -66,44 +64,11 @@ fun ProfileScreen(auth: AuthViewModel) {
                 }
             }
         }
-        Column(verticalArrangement = Arrangement.spacedBy(CampusSpacing.ExtraSmall)) {
-            Surface(
-                color = MaterialTheme.colorScheme.surface,
-                shape = MaterialTheme.shapes.medium,
-            ) {
-                ProfileRow(CampusSymbol.Sun, "外观", "跟随系统")
-            }
-            Surface(
-                onClick = { connectionExpanded = !connectionExpanded },
-                color = MaterialTheme.colorScheme.surface,
-                shape = MaterialTheme.shapes.medium,
-            ) {
-                ProfileRow(
-                    CampusSymbol.Server,
-                    "服务连接",
-                    if (connectionExpanded) "收起" else "详情",
-                    true,
-                )
-            }
-            AnimatedVisibility(connectionExpanded) {
-                Surface(
-                    color = MaterialTheme.colorScheme.surfaceContainerLow,
-                    shape = MaterialTheme.shapes.medium,
-                ) {
-                    Column(
-                        Modifier.fillMaxWidth().padding(CampusSpacing.ExtraLarge),
-                        verticalArrangement = Arrangement.spacedBy(CampusSpacing.Small),
-                    ) {
-                        Text(
-                            state.serverAddress,
-                            style = MaterialTheme.typography.bodyMedium,
-                            maxLines = 3,
-                            overflow = TextOverflow.Ellipsis,
-                        )
-                        SupportingText("实时数据每 5 秒更新")
-                    }
-                }
-            }
+        Surface(
+            color = MaterialTheme.colorScheme.surface,
+            shape = MaterialTheme.shapes.medium,
+        ) {
+            ProfileRow(CampusSymbol.Sun, "外观", "跟随系统")
         }
         state.error?.let { ErrorPanel(it, auth::logout, !state.busy) }
         CampusSecondaryButton(
@@ -123,7 +88,6 @@ private fun ProfileRow(
     symbol: CampusSymbol,
     title: String,
     value: String,
-    actionable: Boolean = false,
 ) {
     Row(
         Modifier.fillMaxWidth().padding(CampusSpacing.ExtraLarge),
@@ -133,6 +97,5 @@ private fun ProfileRow(
         CampusIcon(symbol, tint = MaterialTheme.colorScheme.primary)
         Text(title, Modifier.weight(1f), style = MaterialTheme.typography.titleSmall)
         SupportingText(value, maxLines = 1)
-        if (actionable) CampusIcon(CampusSymbol.Down, Modifier.size(CampusComponents.SmallIcon))
     }
 }

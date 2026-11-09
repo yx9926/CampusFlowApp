@@ -4,6 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import com.campus.BuildConfig
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -21,7 +22,6 @@ data class AuthState(
     val passwordVisible: Boolean = false,
     val confirmationVisible: Boolean = false,
     val busy: Boolean = false,
-    val serverAddress: String = com.campus.BuildConfig.BACKEND_BASE_URL,
     val usernameError: String? = null,
     val passwordError: String? = null,
     val confirmationError: String? = null,
@@ -44,12 +44,6 @@ class AuthViewModel : ViewModel() {
     }
     fun confirmation(value: String) {
         if (!state.busy) state = state.copy(confirmation = value.take(256), confirmationError = null, error = null)
-    }
-    fun serverAddress(value: String) {
-        if (!state.busy) {
-            httpRepository = null
-            state = state.copy(serverAddress = value.take(256), error = null)
-        }
     }
     fun togglePassword() {
         if (!state.busy) state = state.copy(passwordVisible = !state.passwordVisible)
@@ -134,7 +128,7 @@ class AuthViewModel : ViewModel() {
     }
 
     private fun repository(): AuthRepository =
-        httpRepository ?: HttpAuthRepository(state.serverAddress).also { httpRepository = it }
+        httpRepository ?: HttpAuthRepository(BuildConfig.BACKEND_BASE_URL).also { httpRepository = it }
 
     override fun onCleared() {
         scope.cancel()

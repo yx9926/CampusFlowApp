@@ -1,5 +1,6 @@
 package com.campus.auth
 
+import com.campus.BuildConfig
 import org.junit.Assert.*
 import org.junit.Test
 
@@ -21,9 +22,9 @@ class AuthValidationTest {
         assertNotNull(AuthValidation.password("1234567"))
     }
 
-    @Test fun authenticationTargetsTheLocalBackendWithoutAPreselectedAccount() {
+    @Test fun authenticationTargetsTheCloudBackendWithoutAPreselectedAccount() {
         val initial = AuthState()
-        assertEquals("http://127.0.0.1:8080", initial.serverAddress)
+        assertEquals("https://139.159.155.248", BuildConfig.BACKEND_BASE_URL)
         assertEquals("", initial.username)
         assertEquals("", initial.password)
         assertNull(initial.account)

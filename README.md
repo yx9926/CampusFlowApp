@@ -4,19 +4,9 @@
 
 Kotlin + Jetpack Compose + Material 3 客户端。所有业务仅访问实际 Spring Boot 后端，不包含演示登录、内存样例仓库、模拟断网或模拟设备控制。
 
-## 本机后端与手机
+## 云端连接
 
-默认后端根地址为 http://127.0.0.1:8080。该地址通过 USB 的 ADB reverse 指向开发电脑。手机连接电脑热点时，将连接地址改为电脑热点网关，例如 http://192.168.137.1:8080。仅调试构建允许 HTTP，发布部署使用可达的 HTTPS 服务器，可在登录页调整地址。
-
-1. 在 CampusFlow_Last 项目执行 scripts/initialize-real-database.ps1 初始化实际 MySQL 数据库，不导入示例空间或读数。
-2. 执行 scripts/start-backend-local.ps1 启动真实后端，并按终端提示设置首次管理员账号。
-3. 手机启用 USB 调试并授权后执行：
-
-    D:\develop\sdk\android\platform-tools\adb.exe -s 手机序列号 reverse tcp:8080 tcp:8080
-
-4. 安装 app/build/outputs/apk/debug/app-debug.apk，在登录页使用真实账号。注册写入数据库，管理员账号由管理员分配。
-
-USB 转发在拔线或重连后可能需要重建。脱离 USB 使用时，需要将登录页服务器地址改为手机可达的局域网地址或 HTTPS 域名。
+App 在每次启动时固定使用 `https://139.159.155.248`。安装后直接使用真实账号登录。
 
 Cookie 与 CSRF 由 HttpAuthRepository 管理，登录后刷新 CSRF；401 返回登录，403 显示权限错误。会话与密码不持久化，进程结束后重新登录。
 
@@ -54,7 +44,7 @@ AuthFlowTest 的三个界面测试不写数据库，可独立执行。AdminFlowT
 
 使用 MaterialExpressiveTheme、expressive MotionScheme、LoadingIndicator 与按钮形状反馈。Material 3 固定为 1.5.0-alpha13，以匹配现有 Android 36.1 编译 SDK；最新 beta02 要求 Android 37，不纳入本次升级。
 
-登录、找空间、详情、评价、个人中心和八个管理页面统一为大圆角、青绿与黄绿层次、简洁图标和轻量导航。管理工作台采用自适应双列入口，小屏和大字体改为单列；人数与噪声突出数值，次要字段可展开。服务器地址、操作说明与更新时间按需展开，减少常驻说明文字。
+登录、找空间、详情、评价、个人中心和八个管理页面统一为大圆角、青绿与黄绿层次、简洁图标和轻量导航。管理工作台采用自适应双列入口，小屏和大字体改为单列；人数与噪声突出数值，次要字段可展开。操作说明与更新时间按需展开，减少常驻说明文字。
 
 筛选、评价与管理编辑使用底部弹层；保留关闭草稿确认、请求锁定、版本冲突重载和异常重试。搜索起点置于筛选顶部，不恢复默认假坐标，不增加演示数据。真实 HTTP 仓库及后端接口保持原有契约。
 

@@ -36,12 +36,15 @@ class ExpressiveUiTest {
         val configuration = java.io.File(context.filesDir, "backend-test.properties")
         assumeTrue("视觉联调需要本机真实管理员配置", configuration.isFile)
         val properties = Properties().apply { configuration.inputStream().use { load(it) } }
+        assumeTrue(
+            "登录界面固定连接云端，需要云端测试账号配置",
+            properties.getProperty("server", BuildConfig.BACKEND_BASE_URL) == BuildConfig.BACKEND_BASE_URL,
+        )
         capture("login")
         lateinit var admin: AdminViewModel
         compose.runOnUiThread {
             val auth = ViewModelProvider(compose.activity)[AuthViewModel::class.java]
             admin = ViewModelProvider(compose.activity)[AdminViewModel::class.java]
-            auth.serverAddress(properties.getProperty("server"))
             auth.username(properties.getProperty("SERVER_ADMIN.username"))
             auth.password(properties.getProperty("SERVER_ADMIN.password"))
             auth.submit()

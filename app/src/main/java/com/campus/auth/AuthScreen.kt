@@ -12,11 +12,9 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.*
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -34,7 +32,6 @@ fun AuthRoute(model: AuthViewModel) {
         onConfirmation = model::confirmation,
         onPasswordVisibility = model::togglePassword,
         onConfirmationVisibility = model::toggleConfirmation,
-        onServerAddress = model::serverAddress,
         onNavigate = model::navigate,
         onSubmit = model::submit,
     )
@@ -48,13 +45,11 @@ private fun AuthScreen(
     onConfirmation: (String) -> Unit,
     onPasswordVisibility: () -> Unit,
     onConfirmationVisibility: () -> Unit,
-    onServerAddress: (String) -> Unit,
     onNavigate: (AuthPage) -> Unit,
     onSubmit: () -> Unit,
 ) {
     val registering = state.page == AuthPage.Register
     val focus = LocalFocusManager.current
-    var connectionExpanded by rememberSaveable { mutableStateOf(false) }
     val submit = {
         focus.clearFocus()
         onSubmit()
@@ -176,38 +171,6 @@ private fun AuthScreen(
                         ) {
                             Text(if (registering) "返回登录" else "注册账号")
                         }
-                        TextButton(
-                            onClick = { connectionExpanded = !connectionExpanded },
-                            enabled = !state.busy,
-                            modifier =
-                                Modifier.align(Alignment.CenterHorizontally)
-                                    .testTag("connection_settings"),
-                        ) {
-                            CampusIcon(
-                                CampusSymbol.Server,
-                                Modifier.size(CampusComponents.SmallIcon),
-                            )
-                            Spacer(Modifier.width(CampusSpacing.Small))
-                            Text("连接设置")
-                            Spacer(Modifier.width(CampusSpacing.Small))
-                            CampusIcon(CampusSymbol.Down, Modifier.size(CampusComponents.SmallIcon))
-                        }
-                        AnimatedVisibility(connectionExpanded) {
-                            CampusTextInput(
-                                value = state.serverAddress,
-                                onValueChange = onServerAddress,
-                                label = { Text("服务器地址") },
-                                modifier = Modifier.fillMaxWidth(),
-                                singleLine = true,
-                                enabled = !state.busy,
-                                shape = MaterialTheme.shapes.small,
-                                keyboardOptions =
-                                    KeyboardOptions(
-                                        keyboardType = KeyboardType.Uri,
-                                        imeAction = ImeAction.Done,
-                                    ),
-                            )
-                        }
                     }
                 }
                 if (wide) {
@@ -299,5 +262,5 @@ private fun AuthBanner(message: String, error: Boolean) {
 )
 @Composable
 private fun LoginPreview() {
-    CampusFlowTheme { AuthScreen(AuthState(), {}, {}, {}, {}, {}, {}, {}, {}) }
+    CampusFlowTheme { AuthScreen(AuthState(), {}, {}, {}, {}, {}, {}, {}) }
 }

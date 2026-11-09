@@ -54,7 +54,10 @@ fun FiltersDialog(initial: SpaceFilters, onDismiss: () -> Unit, onApply: (SpaceF
     var distance by remember { mutableStateOf(initial.maxDistance.toInt().toString()) }
     var choosingOrigin by remember { mutableStateOf(false) }
 
-    var duration by remember { mutableStateOf(initial.durationMinutes.toString()) }
+    var duration by remember {
+        mutableStateOf(initial.durationMinutes.takeIf { it > 0 }?.toString().orEmpty())
+    }
+    val hasPlannedTime = draft.startAt.isNotEmpty() || (duration.toIntOrNull() ?: 0) > 0
     var error by remember { mutableStateOf<String?>(null) }
     val context = LocalContext.current
     var datePicker by remember { mutableStateOf<DatePickerDialog?>(null) }
@@ -168,9 +171,11 @@ fun FiltersDialog(initial: SpaceFilters, onDismiss: () -> Unit, onApply: (SpaceF
                         Text(title, Modifier.padding(top = CampusSpacing.Medium))
                     }
                 }
-                Row {
-                    Checkbox(draft.openOnly, { draft = draft.copy(openOnly = it) })
-                    Text("仅显示当前开放", Modifier.padding(top = CampusSpacing.Medium))
+                if (!hasPlannedTime) {
+                    Row {
+                        Checkbox(draft.openOnly, { draft = draft.copy(openOnly = it) })
+                        Text("仅显示当前开放", Modifier.padding(top = CampusSpacing.Medium))
+                    }
                 }
                 Text("预计学习", style = MaterialTheme.typography.labelLarge)
                 CampusSecondaryButton(onClick = ::chooseTime) {
@@ -183,21 +188,22 @@ fun FiltersDialog(initial: SpaceFilters, onDismiss: () -> Unit, onApply: (SpaceF
                     TextButton(onClick = { draft = draft.copy(startAt = "") }) { Text("使用当前时间") }
                 CampusTextInput(
                     duration,
-                    { duration = it.take(4) },
+                    { duration = it.filter(Char::isDigit).take(4) },
                     label = { Text("学习时长 · 分钟") },
+                    placeholder = { Text("不限时长") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                     shape = MaterialTheme.shapes.small,
                 )
-                SupportingText("预计时段不保证空位")
+                if (hasPlannedTime) SupportingText("按预计学习时段筛选，空位以实时数据为准")
                 error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
                 CampusPrimaryButton(
                     onClick = {
                         val d = distance.toDoubleOrNull()
                         val lat = draft.latitude
                         val lon = draft.longitude
-                        val minutes = duration.toIntOrNull()
+                        val minutes = duration.ifBlank { "0" }.toIntOrNull()
                         if (d == null || !d.isFinite() || d !in 0.0..1000000.0)
                             error = "距离须为 0—1000000 米"
                         else if (

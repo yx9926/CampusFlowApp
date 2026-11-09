@@ -22,11 +22,13 @@ val reviewStatusNames = linkedMapOf("" to "全部状态", "PENDING" to "待审�
 data class SpaceFilters(
     val name: String = "", val type: String = "", val maxDistance: Double = 3000.0,
     val minQuiet: Int? = null, val maxOccupancy: Double? = null,
-    val facilities: Set<String> = emptySet(), val openOnly: Boolean = true,
+    val facilities: Set<String> = emptySet(), val openOnly: Boolean = false,
     val sort: String = "SCORE", val latitude: Double? = null,
     val longitude: Double? = null, val startAt: String = "", val durationMinutes: Int = 0,
     val originLabel: String = "",
 ) {
+    val hasPlannedTime: Boolean get() = startAt.isNotEmpty() || durationMinutes > 0
+
     val hasLocation: Boolean get() = latitude != null && longitude != null &&
         latitude.isFinite() && longitude.isFinite() && latitude in -90.0..90.0 && longitude in -180.0..180.0
 
